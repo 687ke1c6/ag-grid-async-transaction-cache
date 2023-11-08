@@ -3,7 +3,7 @@
 To create the cache for a `GridApi`, call `createRowCache(api)` after the `onGridReady` event is fired.
 
 ```typescript
-import {createRowCache} from '@00ag4cd1/ag-grid-async-transaction-cache';
+import {createRowCache} from 'ag-grid-async-transaction-cache';
 
 /** GridOptions.onGridReady callback */
 function onGridReady({api}: GridReadyEvent<TData>) {
@@ -14,7 +14,7 @@ function onGridReady({api}: GridReadyEvent<TData>) {
 From this point on any calls to `GridApi.applyTransactionAsync()` will populate the cache, and be made available with `getRow(id)`.
 
 ```typescript
-import {getRowCache} from '@00ag4cd1/ag-grid-async-transaction-cache';
+import {getRowCache} from 'ag-grid-async-transaction-cache';
 
 function subscribeToServer(api: GridApi<TData>) {
     const rowCache = getRowCache(api);
