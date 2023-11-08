@@ -1,7 +1,8 @@
 import { GridApiLike } from "./gridlike.model";
+import { ObjKey } from "./util.model";
 
 export interface RowCache<TApi extends GridApiLike<TData>, TData> {
-    getRow: (id: string) => TData | undefined;
+    getRow: (id: ObjKey) => TData | undefined;
     applyTransactionAsync: TApi['applyTransactionAsync'];
     count: () => number;
     clear: () => void;
@@ -9,5 +10,5 @@ export interface RowCache<TApi extends GridApiLike<TData>, TData> {
 
 export interface RowCacheOptions<TData> {
     patch?: boolean;
-    getId: (row: TData) => (string | number | symbol);
+    getId: (row: TData) => ObjKey;
 }

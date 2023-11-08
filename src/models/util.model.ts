@@ -1,0 +1,1 @@
+export type ObjKey = string | number | symbol;

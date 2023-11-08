@@ -1,10 +1,11 @@
 import { GridApiLike, RowDataTransactionLike, RowNodeTransactionLike } from "./models/gridlike.model";
 import { RowCache, RowCacheOptions } from "./models/row-cache.model";
+import { ObjKey } from "./models/util.model";
 
 const cache_key = '__row_cache__';
 
 type Generic<T> = T extends GridApiLike<infer U> ? U : never;
-type CacheType<TData> = Record<string | number | symbol, readonly [number, TData]>;
+type CacheType<TData> = Record<ObjKey, readonly [number, TData]>;
 
 export const getRowCache = <TApi extends GridApiLike<TData>, TData = Generic<TApi>>(gridApi: TApi): RowCache<TApi, TData> =>
     (gridApi as any)[cache_key];
@@ -38,11 +39,13 @@ export const createRowCache = <TApi extends GridApiLike<TData>, TData = Generic<
             }
         });
 
+    const original_applyTransactionAsync = gridApi.applyTransactionAsync.bind(gridApi);
+
     const rowCache: RowCache<TApi, TData> = {
-        getRow: (id: string) => cache[id]?.[1],
+        getRow: (id: ObjKey) => cache[id]?.[1],
         applyTransactionAsync: (rowDataTransaction: RowDataTransactionLike<TData>, callback?: (res: RowNodeTransactionLike<TData>) => void | undefined) => {
             const context = cacheRows((rowDataTransaction.add || []).concat(rowDataTransaction.update || []));
-            gridApi.applyTransactionAsync(rowDataTransaction, (committedRowDataTransaction: RowNodeTransactionLike<TData>) => {
+            original_applyTransactionAsync(rowDataTransaction, (committedRowDataTransaction: RowNodeTransactionLike<TData>) => {
                 invalidate(context);
                 callback?.(committedRowDataTransaction);
             });
@@ -52,14 +55,7 @@ export const createRowCache = <TApi extends GridApiLike<TData>, TData = Generic<
     };
 
     if (localOptions.patch) {
-        const original_applyTransactionAsync = gridApi.applyTransactionAsync;
-        gridApi.applyTransactionAsync = function(rowDataTransaction, callback) {
-            const context = cacheRows((rowDataTransaction.add || []).concat(rowDataTransaction.update || []));
-            original_applyTransactionAsync.call(this, rowDataTransaction, (committedRowDataTransaction: RowNodeTransactionLike<TData>) => {
-                invalidate(context);
-                callback?.(committedRowDataTransaction);
-            });
-        }
+        gridApi.applyTransactionAsync = rowCache.applyTransactionAsync;
     }
 
     (gridApi as any)[cache_key] = rowCache;
