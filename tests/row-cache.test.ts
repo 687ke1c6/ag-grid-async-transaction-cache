@@ -1,7 +1,9 @@
 import { getRowCache, createRowCache } from '../src/row-cache';
 describe('row-cache tests', () => {
     it('Creating a row cache should return a rowCache object.', () => {
-        const mockApi = {} as any;
+        const mockApi = {
+            applyTransactionAsync: jest.fn()
+        } as any;
         const cache = createRowCache(mockApi, { getId: jest.fn() });
         expect(cache).toBeTruthy();
     });
