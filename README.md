@@ -11,7 +11,7 @@ function onGridReady({api}: GridReadyEvent<TData>) {
 }
 ```
 
-From this point on any calls to `GridApi.applyTransactionAsync()` will add full rows in the cache, and be made available with `getRow(id)`.
+From this point on any calls to `GridApi.applyTransactionAsync()` will populate the cache, and be made available with `getRow(id)`.
 
 ```typescript
 import {getRowCache} from '@00ag4cd1/ag-grid-async-transaction-cache';
@@ -28,7 +28,7 @@ function subscribeToServer(api: GridApi<TData>) {
                 // First consult the cache for the full row, otherwise call getRowNode(id). 
                 // Merge full with partial 
                 const rowData: Partial<TData> = message.row;
-                const fullRowData = rowCache.getRow(rowData.id) ?? api.getRowNode(rowData.id);
+                const fullRowData = rowCache.getRow(rowData.id) ?? api.getRowNode(rowData.id)?.data;
                 const mergedRow = Object.assign({}, fullRowData, rowData);
                 api.applyTrasactionAsync({update: [mergedRow]});
             }
@@ -39,7 +39,7 @@ function subscribeToServer(api: GridApi<TData>) {
 
 ## Why use an async-transaction-cache?
 
-Using the Ag-Grid async transaction api in a high frequency environment, an update can be applied immediately after the row has been added, and even before it has been rendered.
+When using the Ag-Grid async transaction api in a high frequency environment, an update can be applied immediately after the row has been added, and even before it has been rendered.
 This is because the api requires full (non-partial) rows for both adding and updating in a transaction.
 
 ```typescript
