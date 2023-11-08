@@ -1,5 +1,5 @@
 {
-  "name": "@00ag4cd1/ag-grid-async-transaction-cache",
+  "name": "ag-grid-async-transaction-cache",
   "version": "0.0.1",
   "description": "An Ag-Grid plugin which exposes an async transaction cache",
   "main": "lib/cjs/index.js",
@@ -13,7 +13,7 @@
     "prepack": "npm run build"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
